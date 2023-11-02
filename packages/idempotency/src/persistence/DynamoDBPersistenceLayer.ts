@@ -6,6 +6,7 @@ import { IdempotencyRecordStatus } from '../constants';
 import type { DynamoDBPersistenceOptions } from '../types';
 import {
   AttributeValue,
+  ConditionalCheckFailedException,
   DeleteItemCommand,
   DynamoDBClient,
   DynamoDBClientConfig,
@@ -196,14 +197,18 @@ class DynamoDBPersistenceLayer extends BasePersistenceLayer {
             ':inprogress': IdempotencyRecordStatus.INPROGRESS,
           }),
           ConditionExpression: conditionExpression,
+          ReturnValuesOnConditionCheckFailure: 'ALL_OLD',
         })
       );
     } catch (error) {
       if (error instanceof DynamoDBServiceException) {
         if (error.name === 'ConditionalCheckFailedException') {
-          throw new IdempotencyItemAlreadyExistsError(
-            `Failed to put record for already existing idempotency key: ${record.idempotencyKey}`
-          );
+          if (error instanceof ConditionalCheckFailedException) {
+            throw new IdempotencyItemAlreadyExistsError(
+              `Failed to put record for already existing idempotency key: ${record.idempotencyKey}`,
+              error.Item
+            );
+          }
         }
       }
 
