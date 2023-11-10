@@ -159,7 +159,17 @@ describe('Middleware: makeHandlerIdempotent', () => {
     ).use(makeHandlerIdempotent(mockIdempotencyOptions));
     jest
       .spyOn(mockIdempotencyOptions.persistenceStore, 'saveInProgress')
-      .mockRejectedValue(new IdempotencyItemAlreadyExistsError());
+      .mockRejectedValue(
+        new IdempotencyItemAlreadyExistsError(
+          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          new IdempotencyRecord({
+            idempotencyKey: 'my-lambda-function#mocked-hash',
+            status: IdempotencyRecordStatus.EXPIRED,
+            payloadHash: 'different-hash',
+            expiryTimestamp: Date.now() / 1000 - 1,
+          })
+        )
+      );
     const stubRecord = new IdempotencyRecord({
       idempotencyKey: 'idempotencyKey',
       expiryTimestamp: Date.now() + 10000,
@@ -187,7 +197,17 @@ describe('Middleware: makeHandlerIdempotent', () => {
     ).use(makeHandlerIdempotent(mockIdempotencyOptions));
     jest
       .spyOn(mockIdempotencyOptions.persistenceStore, 'saveInProgress')
-      .mockRejectedValue(new IdempotencyItemAlreadyExistsError());
+      .mockRejectedValue(
+        new IdempotencyItemAlreadyExistsError(
+          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          new IdempotencyRecord({
+            idempotencyKey: 'my-lambda-function#mocked-hash',
+            status: IdempotencyRecordStatus.EXPIRED,
+            payloadHash: 'different-hash',
+            expiryTimestamp: Date.now() / 1000 - 1,
+          })
+        )
+      );
     const stubRecordInconsistent = new IdempotencyRecord({
       idempotencyKey: 'idempotencyKey',
       expiryTimestamp: Date.now() + 10000,
@@ -223,7 +243,17 @@ describe('Middleware: makeHandlerIdempotent', () => {
     ).use(makeHandlerIdempotent(mockIdempotencyOptions));
     jest
       .spyOn(mockIdempotencyOptions.persistenceStore, 'saveInProgress')
-      .mockRejectedValue(new IdempotencyItemAlreadyExistsError());
+      .mockRejectedValue(
+        new IdempotencyItemAlreadyExistsError(
+          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          new IdempotencyRecord({
+            idempotencyKey: 'my-lambda-function#mocked-hash',
+            status: IdempotencyRecordStatus.EXPIRED,
+            payloadHash: 'different-hash',
+            expiryTimestamp: Date.now() / 1000 - 1,
+          })
+        )
+      );
     const stubRecordInconsistent = new IdempotencyRecord({
       idempotencyKey: 'idempotencyKey',
       expiryTimestamp: Date.now() + 10000,
