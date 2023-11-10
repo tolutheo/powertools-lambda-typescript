@@ -124,7 +124,15 @@ describe('Given a class with a function to decorate', (classWithLambdaHandler = 
     let resultingError: Error;
     beforeEach(async () => {
       mockSaveInProgress.mockRejectedValue(
-        new IdempotencyItemAlreadyExistsError()
+        new IdempotencyItemAlreadyExistsError(
+          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          new IdempotencyRecord({
+            idempotencyKey: 'my-lambda-function#mocked-hash',
+            status: IdempotencyRecordStatus.EXPIRED,
+            payloadHash: 'different-hash',
+            expiryTimestamp: Date.now() / 1000 - 1,
+          })
+        )
       );
       const idempotencyOptions: IdempotencyRecordOptions = {
         idempotencyKey: 'key',
@@ -164,7 +172,15 @@ describe('Given a class with a function to decorate', (classWithLambdaHandler = 
     let resultingError: Error;
     beforeEach(async () => {
       mockSaveInProgress.mockRejectedValue(
-        new IdempotencyItemAlreadyExistsError()
+        new IdempotencyItemAlreadyExistsError(
+          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          new IdempotencyRecord({
+            idempotencyKey: 'my-lambda-function#mocked-hash',
+            status: IdempotencyRecordStatus.EXPIRED,
+            payloadHash: 'different-hash',
+            expiryTimestamp: Date.now() / 1000 - 1,
+          })
+        )
       );
       const idempotencyOptions: IdempotencyRecordOptions = {
         idempotencyKey: 'key',
@@ -203,7 +219,15 @@ describe('Given a class with a function to decorate', (classWithLambdaHandler = 
   describe('When wrapping a function with previous execution that is COMPLETED', () => {
     beforeEach(async () => {
       mockSaveInProgress.mockRejectedValue(
-        new IdempotencyItemAlreadyExistsError()
+        new IdempotencyItemAlreadyExistsError(
+          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          new IdempotencyRecord({
+            idempotencyKey: 'my-lambda-function#mocked-hash',
+            status: IdempotencyRecordStatus.EXPIRED,
+            payloadHash: 'different-hash',
+            expiryTimestamp: Date.now() / 1000 - 1,
+          })
+        )
       );
       const idempotencyOptions: IdempotencyRecordOptions = {
         idempotencyKey: 'key',
