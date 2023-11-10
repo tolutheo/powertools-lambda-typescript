@@ -18,6 +18,7 @@ import {
   GetItemCommand,
   UpdateItemCommand,
   DeleteItemCommand,
+  ConditionalCheckFailedException,
 } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -412,11 +413,35 @@ describe('Class: DynamoDBPersistenceLayer', () => {
           new IdempotencyRecord({
             idempotencyKey: record.idempotencyKey,
             status: IdempotencyRecordStatus.EXPIRED,
-            payloadHash: 'different-hash',
             expiryTimestamp: Date.now() / 1000 - 1,
           })
         )
       );
+    });
+
+    //write test for when Item is undefined
+    test('if Item is undefined', async () => {
+      // Prepare
+      const persistenceLayer = new TestDynamoDBPersistenceLayer({
+        tableName: dummyTableName,
+      });
+      it('_putRecord throws Error when Item is undefined', async () => {
+        const mockRecord = new IdempotencyRecord({
+          idempotencyKey: 'test-key',
+          status: 'INPROGRESS',
+          expiryTimestamp: Date.now(),
+        });
+
+        DynamoDBClient.prototype.send = jest.fn().mockRejectedValueOnce(
+          new ConditionalCheckFailedException({
+            message: 'Conditional check failed',
+            $metadata: {},
+          })
+        );
+        await expect(
+          persistenceLayer._putRecord(mockRecord)
+        ).rejects.toThrowError('Item is undefined');
+      });
     });
 
     test('when encountering an unknown error, it throws the causing error', async () => {
