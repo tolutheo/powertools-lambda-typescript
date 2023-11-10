@@ -112,7 +112,17 @@ describe('Class IdempotencyHandler', () => {
       // Prepare
       const saveInProgressSpy = jest
         .spyOn(persistenceStore, 'saveInProgress')
-        .mockRejectedValueOnce(new IdempotencyItemAlreadyExistsError());
+        .mockRejectedValueOnce(
+          new IdempotencyItemAlreadyExistsError(
+            'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+            new IdempotencyRecord({
+              idempotencyKey: 'my-lambda-function#mocked-hash',
+              status: IdempotencyRecordStatus.EXPIRED,
+              payloadHash: 'different-hash',
+              expiryTimestamp: Date.now() / 1000 - 1,
+            })
+          )
+        );
 
       // Act & Assess
       await expect(idempotentHandler.handle()).rejects.toThrow();
@@ -123,7 +133,17 @@ describe('Class IdempotencyHandler', () => {
       // Prepare
       const mockProcessIdempotency = jest
         .spyOn(persistenceStore, 'saveInProgress')
-        .mockRejectedValue(new IdempotencyItemAlreadyExistsError());
+        .mockRejectedValue(
+          new IdempotencyItemAlreadyExistsError(
+            'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+            new IdempotencyRecord({
+              idempotencyKey: 'my-lambda-function#mocked-hash',
+              status: IdempotencyRecordStatus.EXPIRED,
+              payloadHash: 'different-hash',
+              expiryTimestamp: Date.now() / 1000 - 1,
+            })
+          )
+        );
       jest.spyOn(persistenceStore, 'getRecord').mockResolvedValue(
         new IdempotencyRecord({
           status: IdempotencyRecordStatus.EXPIRED,
