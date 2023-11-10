@@ -182,7 +182,7 @@ describe('Function: makeIdempotent', () => {
           'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
           new IdempotencyRecord({
             idempotencyKey: 'my-lambda-function#mocked-hash',
-            status: IdempotencyRecordStatus.EXPIRED,
+            status: IdempotencyRecordStatus.INPROGRESS,
             payloadHash: 'different-hash',
             expiryTimestamp: Date.now() / 1000 - 1,
           })
@@ -224,7 +224,7 @@ describe('Function: makeIdempotent', () => {
           'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
           new IdempotencyRecord({
             idempotencyKey: 'my-lambda-function#mocked-hash',
-            status: IdempotencyRecordStatus.EXPIRED,
+            status: IdempotencyRecordStatus.INPROGRESS,
             payloadHash: 'different-hash',
             expiryTimestamp: Date.now() / 1000 - 1,
           })
@@ -274,7 +274,7 @@ describe('Function: makeIdempotent', () => {
           'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
           new IdempotencyRecord({
             idempotencyKey: 'my-lambda-function#mocked-hash',
-            status: IdempotencyRecordStatus.EXPIRED,
+            status: IdempotencyRecordStatus.INPROGRESS,
             payloadHash: 'different-hash',
             expiryTimestamp: Date.now() / 1000 - 1,
           })

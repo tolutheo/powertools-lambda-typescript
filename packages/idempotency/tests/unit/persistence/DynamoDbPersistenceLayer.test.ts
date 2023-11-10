@@ -407,7 +407,15 @@ describe('Class: DynamoDBPersistenceLayer', () => {
 
       // Act & Assess
       await expect(persistenceLayer._putRecord(record)).rejects.toThrowError(
-        IdempotencyItemAlreadyExistsError
+        new IdempotencyItemAlreadyExistsError(
+          `Failed to put record for already existing idempotency key: ${record.idempotencyKey}`,
+          new IdempotencyRecord({
+            idempotencyKey: record.idempotencyKey,
+            status: IdempotencyRecordStatus.EXPIRED,
+            payloadHash: 'different-hash',
+            expiryTimestamp: Date.now() / 1000 - 1,
+          })
+        )
       );
     });
 
