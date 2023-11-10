@@ -13,7 +13,7 @@ import type { DynamoDBPersistenceOptions } from '../../../src/types';
 import { IdempotencyRecordStatus } from '../../../src';
 import {
   DynamoDBClient,
-  DynamoDBServiceException,
+  //DynamoDBServiceException,
   PutItemCommand,
   GetItemCommand,
   UpdateItemCommand,
@@ -396,13 +396,19 @@ describe('Class: DynamoDBPersistenceLayer', () => {
         expiryTimestamp: 0,
       });
       client.on(PutItemCommand).rejects(
-        new DynamoDBServiceException({
-          $fault: 'client',
+        new ConditionalCheckFailedException({
+          //$fault: 'client',
           $metadata: {
             httpStatusCode: 400,
             requestId: 'someRequestId',
           },
-          name: 'ConditionalCheckFailedException',
+          message: 'Conditional check failed',
+          Item: {
+            id: { S: 'test-key' },
+            status: { S: 'INPROGRESS' },
+            expiration: { N: Date.now().toString() },
+          },
+          //name: 'ConditionalCheckFailedException',
         })
       );
 
@@ -417,31 +423,6 @@ describe('Class: DynamoDBPersistenceLayer', () => {
           })
         )
       );
-    });
-
-    //write test for when Item is undefined
-    test('if Item is undefined', async () => {
-      // Prepare
-      const persistenceLayer = new TestDynamoDBPersistenceLayer({
-        tableName: dummyTableName,
-      });
-      it('_putRecord throws Error when Item is undefined', async () => {
-        const mockRecord = new IdempotencyRecord({
-          idempotencyKey: 'test-key',
-          status: 'INPROGRESS',
-          expiryTimestamp: Date.now(),
-        });
-
-        DynamoDBClient.prototype.send = jest.fn().mockRejectedValueOnce(
-          new ConditionalCheckFailedException({
-            message: 'Conditional check failed',
-            $metadata: {},
-          })
-        );
-        await expect(
-          persistenceLayer._putRecord(mockRecord)
-        ).rejects.toThrowError('Item is undefined');
-      });
     });
 
     test('when encountering an unknown error, it throws the causing error', async () => {
@@ -708,5 +689,28 @@ describe('Class: DynamoDBPersistenceLayer', () => {
         Key: marshall({ id: dummyKey }),
       });
     });
+  });
+
+  //write test for when Item is undefined
+  test('_putRecord throws Error when Item is undefined', async () => {
+    // Prepare
+    const persistenceLayer = new TestDynamoDBPersistenceLayer({
+      tableName: dummyTableName,
+    });
+    const mockRecord = new IdempotencyRecord({
+      idempotencyKey: 'test-key',
+      status: 'INPROGRESS',
+      expiryTimestamp: Date.now(),
+    });
+
+    DynamoDBClient.prototype.send = jest.fn().mockRejectedValueOnce(
+      new ConditionalCheckFailedException({
+        message: 'Conditional check failed',
+        $metadata: {},
+      })
+    );
+    await expect(persistenceLayer._putRecord(mockRecord)).rejects.toThrowError(
+      'Item is undefined'
+    );
   });
 });

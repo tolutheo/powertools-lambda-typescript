@@ -179,12 +179,14 @@ describe('Function: makeIdempotent', () => {
       .spyOn(mockIdempotencyOptions.persistenceStore, 'saveInProgress')
       .mockRejectedValue(
         new IdempotencyItemAlreadyExistsError(
-          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          'Failed to put record for already existing idempotency key: idempotencyKey',
           new IdempotencyRecord({
-            idempotencyKey: 'my-lambda-function#mocked-hash',
-            status: IdempotencyRecordStatus.INPROGRESS,
-            payloadHash: 'different-hash',
-            expiryTimestamp: Date.now() / 1000 - 1,
+            idempotencyKey: 'idempotencyKey',
+            expiryTimestamp: Date.now() + 10000,
+            inProgressExpiryTimestamp: 0,
+            responseData: { response: false },
+            payloadHash: 'payloadHash',
+            status: IdempotencyRecordStatus.COMPLETED,
           })
         )
       );
@@ -221,12 +223,14 @@ describe('Function: makeIdempotent', () => {
       .spyOn(mockIdempotencyOptions.persistenceStore, 'saveInProgress')
       .mockRejectedValue(
         new IdempotencyItemAlreadyExistsError(
-          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          'Failed to put record for already existing idempotency key: idempotencyKey',
           new IdempotencyRecord({
-            idempotencyKey: 'my-lambda-function#mocked-hash',
-            status: IdempotencyRecordStatus.INPROGRESS,
-            payloadHash: 'different-hash',
-            expiryTimestamp: Date.now() / 1000 - 1,
+            idempotencyKey: 'idempotencyKey',
+            expiryTimestamp: Date.now() + 10000,
+            inProgressExpiryTimestamp: 0,
+            responseData: { response: false },
+            payloadHash: 'payloadHash',
+            status: IdempotencyRecordStatus.COMPLETED,
           })
         )
       );
@@ -271,12 +275,14 @@ describe('Function: makeIdempotent', () => {
       .spyOn(mockIdempotencyOptions.persistenceStore, 'saveInProgress')
       .mockRejectedValue(
         new IdempotencyItemAlreadyExistsError(
-          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          'Failed to put record for already existing idempotency key: idempotencyKey',
           new IdempotencyRecord({
-            idempotencyKey: 'my-lambda-function#mocked-hash',
-            status: IdempotencyRecordStatus.INPROGRESS,
-            payloadHash: 'different-hash',
-            expiryTimestamp: Date.now() / 1000 - 1,
+            idempotencyKey: 'idempotencyKey',
+            expiryTimestamp: Date.now() + 10000,
+            inProgressExpiryTimestamp: 0,
+            responseData: { response: false },
+            payloadHash: 'payloadHash',
+            status: IdempotencyRecordStatus.EXPIRED,
           })
         )
       );
