@@ -125,12 +125,10 @@ describe('Given a class with a function to decorate', (classWithLambdaHandler = 
     beforeEach(async () => {
       mockSaveInProgress.mockRejectedValue(
         new IdempotencyItemAlreadyExistsError(
-          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          'Failed to put record for already existing idempotency key: key',
           new IdempotencyRecord({
-            idempotencyKey: 'my-lambda-function#mocked-hash',
+            idempotencyKey: 'key',
             status: IdempotencyRecordStatus.INPROGRESS,
-            payloadHash: 'different-hash',
-            expiryTimestamp: Date.now() / 1000 - 1,
           })
         )
       );
@@ -173,12 +171,10 @@ describe('Given a class with a function to decorate', (classWithLambdaHandler = 
     beforeEach(async () => {
       mockSaveInProgress.mockRejectedValue(
         new IdempotencyItemAlreadyExistsError(
-          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          'Failed to put record for already existing idempotency key: key',
           new IdempotencyRecord({
-            idempotencyKey: 'my-lambda-function#mocked-hash',
-            status: IdempotencyRecordStatus.INPROGRESS,
-            payloadHash: 'different-hash',
-            expiryTimestamp: Date.now() / 1000 - 1,
+            idempotencyKey: 'key',
+            status: IdempotencyRecordStatus.EXPIRED,
           })
         )
       );
@@ -220,12 +216,11 @@ describe('Given a class with a function to decorate', (classWithLambdaHandler = 
     beforeEach(async () => {
       mockSaveInProgress.mockRejectedValue(
         new IdempotencyItemAlreadyExistsError(
-          'Failed to put record for already existing idempotency key: my-lambda-function#mocked-hash',
+          'Failed to put record for already existing idempotency key: key',
           new IdempotencyRecord({
-            idempotencyKey: 'my-lambda-function#mocked-hash',
+            idempotencyKey: 'key',
             status: IdempotencyRecordStatus.COMPLETED,
-            payloadHash: 'different-hash',
-            expiryTimestamp: Date.now() / 1000 - 1,
+            responseData: 'Hi',
           })
         )
       );
